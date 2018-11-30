@@ -67,9 +67,14 @@ public class Poly {
 
     // helper function, append term to poly
     private Poly append_term(Term t) {
-        Term cur_term = this.getLast();
-        cur_term.setNext(t);
-        this.setLast(t);
+        if (this.isZero()) {
+            this.setFirst(t);
+            this.setLast(t);
+        } else {
+            Term cur_term = this.getLast();
+            cur_term.setNext(t);
+            this.setLast(t);
+        }
         return this;
     }
 
@@ -139,12 +144,85 @@ public class Poly {
             }
         }
 
+        if (left != null) {
+            while (left != null) {
+                Term copy_left = new Term(left.getCoef(), left.getExpo());
+                result.append_term(copy_left);
+                left = left.getNext();
+            }
+        } else {
+            while (right != null) {
+                Term copy_right = new Term(right.getCoef(), right.getExpo());
+                result.append_term(copy_right);
+                right = right.getNext();
+            }
+        }
+
         return result;
     }
 
+    public Poly minus(){
+        Poly res = new Poly();
+        Term temp = this.first;
+        Term prev = new Term(0,Integer.MAX_VALUE);
+        Term dummy_first =prev;
+        // Term ptr = res.first;
+        while(temp != null){
+            Term ptr = new Term(0,Integer.MAX_VALUE);
+            ptr.setCoef(temp.getCoef()*(-1));
+            ptr.setExpo(temp.getExpo());
+            System.out.println("coeff now is: " + Integer.toString(ptr.coef));
+            prev.next = ptr;
+            prev = ptr;
+            temp = temp.getNext();
+        }
+        res.first = dummy_first.next;
+        return res;
+    }
 
 //    public String toString() {
-//
+//        StringBuffer buffer = new StringBuffer("");
+//        if (this.isZero()) {
+//            buffer.append("0");
+//        } else {
+//            Term cur = this.getFirst();
+//            while (cur != null) {
+//                String cur_str = Integer.toString(cur.getCoef())+"x"+Integer.toString(cur.getExpo())+"+";
+//                buffer.append(cur_str);
+//                cur = cur.getNext();
+//            }
+//            buffer.deleteCharAt(buffer.length()-1);
+//        }
+//        return buffer.toString();
 //    }
+
+    public String toString() {
+        String res = "";
+        Term ptr = this.first;
+        StringBuffer sb = new StringBuffer();
+        while(ptr != null){
+//            System.out.println("sb.coef: " + Integer.toString(ptr.coef)) ;
+            if(ptr.getCoef() == 0){continue;}
+            if(ptr.getCoef() > 0){
+                sb.append('+');
+                sb.append(Integer.toString(ptr.coef));
+                sb.append('x');
+                sb.append(Integer.toString(ptr.expo));
+            }
+            else{
+                // sb.append('-');
+                sb.append(Integer.toString(ptr.coef));
+                sb.append('x');
+                sb.append(Integer.toString(ptr.expo));
+            }
+            ptr = ptr.next;
+        }
+        if(sb.charAt(0) == '+'){
+            sb.deleteCharAt(0);
+        }
+
+        return sb.toString();
+    }
+
 
 }
